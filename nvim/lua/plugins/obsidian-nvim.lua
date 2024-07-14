@@ -1,3 +1,9 @@
+local function search_link(flags)
+  local markdown_link = "\\[[^]]*](.*)"
+  local wiki_link = "\\[\\[[^]]*]]"
+  vim.fn.search(markdown_link .. "\\|" .. wiki_link, flags)
+end
+
 return {
   "epwalsh/obsidian.nvim",
   -- the obsidian vault in this default config  ~/obsidian-vault
@@ -13,15 +19,16 @@ return {
       opts = {
         mappings = {
           n = {
-            ["gf"] = {
-              function()
-                if require("obsidian").util.cursor_on_markdown_link() then
-                  return "<Cmd>ObsidianFollowLink<CR>"
-                else
-                  return "gf"
-                end
-              end,
-              desc = "Obsidian Follow Link",
+            -- Opens the home page.
+            ["<Leader>ww"] = {
+              "<Cmd>e " .. vim.env.HOME .. "/workspace/notes/Home.md<CR>",
+              desc = "Obsidian - Home",
+            },
+          },
+          v = {
+            ["<CR>"] = {
+              "<Cmd>ObsidianLinkNew<CR>",
+              desc = "Obsidian - Link New",
             },
           },
         },
@@ -49,6 +56,38 @@ return {
       subdir = "templates",
       date_format = "%Y-%m-%d-%a",
       time_format = "%H:%M",
+    },
+
+    -- Optional, configure key mappings. These are the defaults. If you don't want to set any keymappings this
+    -- way then set 'mappings = {}'.
+    mappings = {
+      -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
+      ["gf"] = {
+        action = function()
+          return require("obsidian").util.gf_passthrough()
+        end,
+        opts = { noremap = false, expr = true, buffer = true },
+      },
+      -- Smart action depending on context, either follow link or toggle checkbox.
+      ["<CR>"] = {
+        action = function()
+          return require("obsidian").util.smart_action()
+        end,
+        opts = { buffer = true, expr = true },
+        desc = "Obsidian - Smart action",
+      },
+      -- Jump to next link.
+      ["<Tab>"] = {
+        action = function() search_link "" end,
+        opts = { buffer = true, expr = false },
+        desc = "Obsidian - Jump to next link",
+      },
+      -- Jump to next link.
+      ["<S-Tab>"] = {
+        action = function() search_link "b" end,
+        opts = { buffer = true, expr = false },
+        desc = "Obsidian - Jump to next link",
+      },
     },
 
     note_frontmatter_func = function(note)
