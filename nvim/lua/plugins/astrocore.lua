@@ -63,7 +63,7 @@ return {
         -- ["<Leader>b"] = { desc = "Buffers" },
 
         -- setting a mapping to false will disable it
-        -- ["<C-S>"] = false,
+        ["<C-Q>"] = false,
       },
     },
   },
