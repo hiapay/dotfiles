@@ -25,6 +25,12 @@ return {
             },
           },
         },
+        options = {
+          opt = {
+            -- Obsidian additional syntax features require 'conceallevel' to be set to 1 or 2.
+            conceallevel = 2, -- required for obsidian
+          },
+        },
       },
     },
   },
